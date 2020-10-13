@@ -1,0 +1,55 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (6.0.3.4)
+      activesupport (= 6.0.3.4)
+    activemodel-serializers-xml (1.0.2)
+      activemodel (> 5.x)
+      activesupport (> 5.x)
+      builder (~> 3.1)
+    activeresource (5.1.1)
+      activemodel (>= 5.0, < 7)
+      activemodel-serializers-xml (~> 1.0)
+      activesupport (>= 5.0, < 7)
+    activesupport (6.0.3.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+      zeitwerk (~> 2.2, >= 2.2.2)
+    algoliasearch (1.27.4)
+      httpclient (~> 2.8, >= 2.8.3)
+      json (>= 1.5.1)
+    builder (3.2.4)
+    concurrent-ruby (1.1.7)
+    graphql (1.11.5)
+    graphql-client (0.16.0)
+      activesupport (>= 3.0)
+      graphql (~> 1.8)
+    httpclient (2.8.3)
+    i18n (1.8.5)
+      concurrent-ruby (~> 1.0)
+    json (2.3.1)
+    minitest (5.14.2)
+    rack (2.2.3)
+    shopify_api (9.2.0)
+      activeresource (>= 4.1.0, < 6.0.0)
+      graphql-client
+      rack
+    thread_safe (0.3.6)
+    tzinfo (1.2.7)
+      thread_safe (~> 0.1)
+    zeitwerk (2.4.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  algoliasearch
+  shopify_api
+
+RUBY VERSION
+   ruby 2.5.3p105
+
+BUNDLED WITH
+   2.1.4

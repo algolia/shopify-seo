@@ -6,9 +6,11 @@ class ShopifyApiClient
 
   def update_custom_collection_order(collection_id, collects)
     custom_collection = retrieve_custom_collection(collection_id)
-    custom_collection.sort_order = 'manual'
-    # the new sort order needs to be persisted before updating the products order
-    custom_collection.save
+    if custom_collection.sort_order != 'manual'
+      # the new sort order needs to be persisted before updating the products order
+      custom_collection.sort_order = 'manual'
+      custom_collection.save
+    end
     custom_collection.collects = collects
     custom_collection.save
   end
@@ -49,7 +51,7 @@ class ShopifyApiClient
   def retrieve_all(resource_name, extra_params: {})
     resource_class = "ShopifyAPI::#{resource_name}".constantize
     all_records = []
-    resources = resource_class.find(:all, params: extra_params.merge(limit: 1))
+    resources = resource_class.find(:all, params: extra_params.merge(limit: 250))
     all_records += resources
     while resources.next_page?
       resources = resources.fetch_next_page

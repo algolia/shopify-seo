@@ -1,22 +1,41 @@
 class UpdateProductsOrder
-  def initialize(collection_id:, collection_type:, algolia_index:, shopify_api_client:)
-    @collection_id = collection_id
+  def initialize(
+    collection:,
+    collection_type:,
+    algolia_api_client:,
+    shopify_api_client:
+  )
+    @collection = collection
     @collection_type = collection_type
-    @algolia_index = algolia_index
+    @algolia_api_client = algolia_api_client
     @shopify_api_client = shopify_api_client
     @ordered_collection_product_ids = Set.new
   end
 
   def call
     fetch_ordered_collection_product_ids
-    log_algolia_products_order
+    append_hidden_products
     update_products_order
   end
 
   private
 
+  # we put the hidden products at the end of the collection
+  def append_hidden_products
+    @ordered_collection_product_ids += hidden_products
+  end
+
+  # Hidden products are products that are on the collection in Shopify but not in Algolia.
+  # A product will not appear in Algolia if :
+  # - it is hidden through a merchandising rule
+  # - it is unpublished or published in the future
+  # - it has '[hidden]' in its title or a tag 'algolia-ignore'
+  def hidden_products
+    @collection.product_ids - @ordered_collection_product_ids.to_a
+  end
+
   def fetch_ordered_collection_product_ids
-    @algolia_index.browse(query: '', filters: query_filter) do |hit|
+    @algolia_api_client.retrieve_all(query_params).each do |hit|
       @ordered_collection_product_ids << hit['id']
     end
   end
@@ -33,12 +52,12 @@ class UpdateProductsOrder
   end
 
   def update_custom_collection_products_order
-    @shopify_api_client.update_custom_collection_order(@collection_id, new_collects_body)
+    @shopify_api_client.update_custom_collection_order(collection_id, new_collects_body)
   end
 
   def update_smart_collection_products_order
     @shopify_api_client.update_smart_collection_order(
-      @collection_id, @ordered_collection_product_ids.to_a
+      collection_id, @ordered_collection_product_ids.to_a
     )
   end
 
@@ -49,7 +68,7 @@ class UpdateProductsOrder
         id: collection_collects_id_by_product_id[product_id],
         position: idx + 1,
         product_id: product_id,
-        collection_id: @collection_id
+        collection_id: collection_id
       }
     end
   end
@@ -60,15 +79,20 @@ class UpdateProductsOrder
   end
 
   def collection_collects
-    @collection_collects ||= @shopify_api_client.retrieve_collects_for_collection(@collection_id)
+    @collection_collects ||= @shopify_api_client.retrieve_collects_for_collection(collection_id)
+  end
+
+  def query_params
+    # we need to provide the rule context to take into account
+    # the merchandising rules on that collection
+    { filters: query_filter, ruleContexts: [@collection.handle], attributesToRetrieve: ['id'] }
   end
 
   def query_filter
-    "collection_ids:#{@collection_id}"
+    "collection_ids:#{collection_id}"
   end
 
-  def log_algolia_products_order
-    puts "#{@ordered_collection_product_ids.to_a} " \
-      "is the Algolia order for collection #{@collection_id}"
+  def collection_id
+    @collection.id
   end
 end

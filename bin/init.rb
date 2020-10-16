@@ -11,11 +11,11 @@ require_relative '../lib/services/retrieve_collections'
 require_relative '../lib/services/update_products_order'
 require_relative '../lib/helpers/updater_helper'
 
+start_time = Time.now
+
 puts
 puts 'Initiating Update...'
 puts
-
-NUMBER_OF_PRODUCTS_TO_ORDER = 250
 
 # assign variables
 algolia_app_id = ENV['ALGOLIA_APP_ID']
@@ -100,3 +100,9 @@ custom_collections.each do |collection|
   UpdaterHelper.log_service_result(result, collection.id)
   puts
 end
+
+puts 'All collections have been updated ! 🎉'
+puts
+
+time_to_process = Time.now - start_time
+puts "Program executed in #{time_to_process} seconds."

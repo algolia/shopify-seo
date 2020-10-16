@@ -1,6 +1,6 @@
 # Shopify x Algolia SEO
 This repository contains a script that synchronize records positions in collections between Shopify and Algolia for SEO purposes.
-This script goes through all the shop published collections and update manually the product orders of these collections to match the order rendered by Algolia on the collection pages.
+This script goes through all the shop published collections and updates manually the order of the first products to match the order rendered by Algolia on the collection pages.
 
 ## Setup
 
@@ -13,10 +13,6 @@ You also need to have `bundler` installed. You can install it by running `gem in
 #### Algolia Application
 
 You need to have the Algolia for Shopify app installed on your store with the `Collection Page` feature enabled.
-**Important** :
-The number of products retrieved by Algolia through a search is limited (see [paginationLimitedTo](https://www.algolia.com/doc/api-reference/api-parameters/paginationLimitedTo/) parameter).
-It means that only the first `N` number of products will be correctly ordered in Shopify, `N` being the number of products that can be retrieved through a search (so `N = paginationLimitedTo`).
-The rest will keep the Shopify order.
 
 #### Private application
 
@@ -48,22 +44,32 @@ Run this command to install the gems used by this program :
 bundle install
 ```
 
-## Run the program
+#### Run the program
 
 To launch the program, you have to run this command in the terminal :
 ```
 ./bin/init.rb
 ```
-## Performance
-
-For a store that has `14` collections that have `20 000` products combined, it takes approximately `93` seconds for the script to complete.
-We can approximate the time to process `4.64` seconds for `1000` products.
-What takes the most time is fetching all the products of each Shopify collection from Shopify.
-This fetching is necessary since we have to pass all the product ids to Shopify to update the products order, and Algolia might not have all these product ids.
-Indeed, if a product has been hidden through a merchandising rule or is not published, it won't appear on Algolia.
 
 ## Usage
 
+### Number of products
+
+By default the program update the position of the `100` first products only.
+This value can be changed by affecting a new value to `NUMBER_OF_PRODUCTS_TO_ORDER` in the `./lib/updater_helper.rb` file.
+For the current implementation this value cannot go beyond `250`.
+
+### Performance
+
+For a store that has `14` collections that have `20 000` products combined, it takes approximately `40` seconds for the script to complete, which can be approximated to `2.86` second per colleciton.
+
+### Frequency
+
 With real-time indexing, your Algolia index will change every time a product or a collection is updated in Shopify. This means the order of the products might change as well.
 We advise you to run this script regularly to keep the synchronization up-to-date.
-Ideally, it should be run once every hour. We believe it should at least be run once a day if the traffic is high on your store.
+Ideally, it should be run at least once every hour.
+
+### Operations
+
+The algorithm performs one Algolia search operation per collection updated.
+

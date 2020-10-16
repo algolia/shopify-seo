@@ -9,11 +9,13 @@ require_relative '../lib/clients/algolia_api_client'
 
 require_relative '../lib/services/retrieve_collections'
 require_relative '../lib/services/update_products_order'
-require_relative '../lib/loggers/service_logger'
+require_relative '../lib/helpers/updater_helper'
 
 puts
 puts 'Initiating Update...'
 puts
+
+NUMBER_OF_PRODUCTS_TO_ORDER = 250
 
 # assign variables
 algolia_app_id = ENV['ALGOLIA_APP_ID']
@@ -68,7 +70,6 @@ puts
 # update smart collection orders
 smart_collections.each do |collection|
   puts "updating positions for smart collection #{collection.id}"
-  puts "number of products : #{collection.product_ids.count}"
 
   result = UpdateProductsOrder.new(
     collection: collection,
@@ -77,7 +78,7 @@ smart_collections.each do |collection|
     collection_type: :smart_collection
   ).call
 
-  ServiceLogger.log_service_result(result, collection.id)
+  UpdaterHelper.log_service_result(result, collection.id)
   puts
 end
 
@@ -96,6 +97,6 @@ custom_collections.each do |collection|
     collection_type: :custom_collection
   ).call
 
-  ServiceLogger.log_service_result(result, collection.id)
+  UpdaterHelper.log_service_result(result, collection.id)
   puts
 end

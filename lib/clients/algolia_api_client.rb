@@ -11,20 +11,13 @@ class AlgoliaApiClient
   end
 
   # search the results through all the pages
-  def retrieve_all(params = {}) # rubocop:disable Metrics/MethodLength
-    page = 0
-    all_hits = []
-    search_results = search('', params.merge(page: page, hitsPerPage: 1000))
-    all_hits += search_results['hits']
-    number_of_pages = search_results['nbPages']
-
-    # `page` is zero-based so we add 1 to page
-    while (page + 1) < number_of_pages
-      page += 1
-      search_results = search('', params.merge(page: page, hitsPerPage: 1000))
-      all_hits += search_results['hits']
-    end
-    all_hits
+  def retrieve_all(params = {})
+    search(
+      '',
+      params.merge(
+        hitsPerPage: UpdaterHelper::NUMBER_OF_PRODUCTS_TO_ORDER
+      )
+    ).dig('hits')
   end
 
   private

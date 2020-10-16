@@ -1,4 +1,6 @@
-module ServiceLogger
+module UpdaterHelper
+  NUMBER_OF_PRODUCTS_TO_ORDER = 100
+
   class << self
     def log_service_result(result, collection_id)
       if result

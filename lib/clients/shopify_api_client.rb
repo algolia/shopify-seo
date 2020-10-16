@@ -17,6 +17,7 @@ class ShopifyApiClient
 
   def update_smart_collection_order(collection_id, product_ids)
     smart_collection = retrieve_smart_collection(collection_id)
+
     # I got inspired by the gem `order` method on `SmartCollection` class but changed
     # it to pass the parameters in the request body and not the URL, otherwise we get
     # a 414 URI too long error. It is not in the Shopify docs but it seems to work.
@@ -38,8 +39,12 @@ class ShopifyApiClient
     retrieve_all('Collect', extra_params: { collection_id: collection_id })
   end
 
-  def retrieve_products_for_collection(collection_id)
-    retrieve_all('Product', extra_params: { collection_id: collection_id })
+  def retrieve_collection_products(collection_id)
+    ShopifyAPI::Product.find(
+      :all,
+      from: "#{ShopifyAPI::Product.prefix}/collections/#{collection_id}/products.json",
+      params: { collection_id: collection_id, limit: UpdaterHelper::NUMBER_OF_PRODUCTS_TO_ORDER }
+    )
   end
 
   def retrieve_smart_collections

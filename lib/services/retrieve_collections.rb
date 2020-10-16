@@ -25,7 +25,7 @@ class RetrieveCollections
     puts "retrieving product ids for collection #{collection.id}"
     collection.tap do |c|
       c.product_ids = @shopify_api_client
-                      .retrieve_products_for_collection(c.id).map(&:id)
+                      .retrieve_collection_products(c.id).map(&:id)
     end
   end
 

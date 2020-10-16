@@ -23,18 +23,18 @@ class RetrieveCollections
 
   def augment_collection(collection)
     puts "retrieving product ids for collection #{collection.id}"
-    collection.product_ids = @shopify_api_client
-                             .retrieve_products_for_collection(collection.id).map(&:id)
+    collection.tap do |c|
+      c.product_ids = @shopify_api_client
+                      .retrieve_products_for_collection(c.id).map(&:id)
+    end
   end
 
   def retrieve_collections_with_product_ids
     @smart_collections_with_product_ids = smart_collections.map do |collection|
       augment_collection(collection)
-      collection
     end
     @custom_collections_with_product_ids = custom_collections.map do |collection|
       augment_collection(collection)
-      collection
     end
   end
 

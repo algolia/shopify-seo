@@ -13,6 +13,8 @@ You also need to have `bundler` installed. You can install it by running `gem in
 #### Algolia Application
 
 You need to have the Algolia for Shopify app installed on your store with the `Collection Page` feature enabled.
+You should also have your `attributeForDistinct` attribute set to `id` in your Algolia dashboard like it is done by default when installing our extension.
+This is to ensure we do not fetch two Algolia records (that represent Shopify variants) belonging to the same product.
 
 #### Private application
 
@@ -56,7 +58,7 @@ To launch the program, you have to run this command in the terminal :
 ### Number of products
 
 By default the program update the position of the `100` first products only.
-This value can be changed by affecting a new value to `NUMBER_OF_PRODUCTS_TO_ORDER` in the `./lib/updater_helper.rb` file.
+This value can be changed by adding a `NUMBER_OF_PRODUCTS_TO_ORDER` variable in your `.env` file.
 For the current implementation this value cannot go beyond `250`.
 
 ### Performance

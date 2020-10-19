@@ -20,16 +20,14 @@ class UpdateProductsOrder
 
   private
 
-  # we put the hidden products at the end of the collection
+  # We put the hidden products at the end of the set, otherwise the products will
+  # remain in the first positions and it creates an offset in the order
   def append_hidden_products
     @ordered_collection_product_ids += hidden_products
   end
 
   # Hidden products are products that are on the collection in Shopify but not in Algolia.
-  # A product will not appear in Algolia if :
-  # - it is hidden through a merchandising rule
-  # - it is unpublished or published in the future
-  # - it has '[hidden]' in its title or a tag 'algolia-ignore'
+  # See `skip_collections?` method for cases where we don't index in Algolia.
   def hidden_products
     @collection.product_ids - @ordered_collection_product_ids.to_a
   end
@@ -85,7 +83,12 @@ class UpdateProductsOrder
   def query_params
     # we need to provide the rule context to take into account
     # the merchandising rules on that collection
-    { filters: query_filter, ruleContexts: [@collection.handle], attributesToRetrieve: ['id'] }
+    {
+      filters: query_filter,
+      ruleContexts: [@collection.handle],
+      distinct: true,
+      attributesToRetrieve: ['id']
+    }
   end
 
   def query_filter

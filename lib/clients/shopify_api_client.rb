@@ -43,7 +43,7 @@ class ShopifyApiClient
     ShopifyAPI::Product.find(
       :all,
       from: "#{ShopifyAPI::Product.prefix}/collections/#{collection_id}/products.json",
-      params: { collection_id: collection_id, limit: UpdaterHelper::NUMBER_OF_PRODUCTS_TO_ORDER }
+      params: { collection_id: collection_id, limit: UpdaterHelper.number_of_products_to_order }
     )
   end
 

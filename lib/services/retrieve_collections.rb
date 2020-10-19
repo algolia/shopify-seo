@@ -1,22 +1,13 @@
-# We retrieve all the store collections except the ones we don't index in Algolia.
-# We don't index a collection in Algolia if :
-# - it is unpublished or is published in the future
-# - it has '[hidden]' in its title
-# - it does not have any products
-# - it is the frontpage collection
 class RetrieveCollections
-  attr_reader :context
-
   def initialize(shopify_api_client)
     @shopify_api_client = shopify_api_client
-    @context = OpenStruct.new
   end
 
   def call
-    retrieve_collections_with_product_ids
-    context.smart_collections = filtered_collections(:smart_collections)
-    context.custom_collections = filtered_collections(:custom_collections)
-    context
+    OpenStruct.new(
+      smart_collections: filtered_collections(:smart_collections),
+      custom_collections: filtered_collections(:custom_collections)
+    )
   end
 
   private
@@ -29,11 +20,14 @@ class RetrieveCollections
     end
   end
 
-  def retrieve_collections_with_product_ids
-    @smart_collections_with_product_ids = smart_collections.map do |collection|
+  def smart_collections_with_product_ids
+    smart_collections.map do |collection|
       augment_collection(collection)
     end
-    @custom_collections_with_product_ids = custom_collections.map do |collection|
+  end
+
+  def custom_collections_with_product_ids
+    custom_collections.map do |collection|
       augment_collection(collection)
     end
   end
@@ -54,12 +48,18 @@ class RetrieveCollections
 
   def collections_with_product_ids(collection_type)
     if collection_type == :smart_collections
-      @smart_collections_with_product_ids
+      smart_collections_with_product_ids
     elsif collection_type == :custom_collections
-      @custom_collections_with_product_ids
+      custom_collections_with_product_ids
     end
   end
 
+  # We retrieve all the store collections except the ones we don't index in Algolia.
+  # We don't index a collection in Algolia if :
+  # - it is unpublished or is published in the future
+  # - it has '[hidden]' in its title
+  # - it does not have any products
+  # - it is the frontpage collection
   def skip_collection?(collection)
     collection.published_at.nil? ||
       Time.parse(collection.published_at).utc > Time.now.utc ||

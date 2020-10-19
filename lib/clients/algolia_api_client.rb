@@ -15,7 +15,7 @@ class AlgoliaApiClient
     search(
       '',
       params.merge(
-        hitsPerPage: UpdaterHelper::NUMBER_OF_PRODUCTS_TO_ORDER
+        hitsPerPage: UpdaterHelper.number_of_products_to_order
       )
     ).dig('hits')
   end

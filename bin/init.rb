@@ -88,7 +88,7 @@ puts 'Updating custom collections'
 puts
 
 custom_collections.each do |collection|
-  puts "updating postions for custom collection #{collection}"
+  puts "updating postions for custom collection #{collection.id}"
 
   result = UpdateProductsOrder.new(
     collection: collection,

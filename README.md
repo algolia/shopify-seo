@@ -78,5 +78,6 @@ The algorithm performs one Algolia search operation per collection updated.
 ### Logger
 
 The script logs all the requests to Shopify in a  `shopify_api.log` file located in the `/log` folder. This file might get pretty big if the script is run often.
-If you want to stop logging the requests, comment the line `38` of the `bin/init.rb` file.
+If you want to stop logging the requests, comment the line `ActiveResource::Base.logger = Logger.new('log/shopify_api.log')
+` of the `bin/init.rb` file.
 

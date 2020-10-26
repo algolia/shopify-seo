@@ -34,6 +34,7 @@ index_name = ENV['INDEX_NAME']
 end
 
 # initate requests logger
+# Comment this line if you don't want to log the requests made to Shopify
 ActiveResource::Base.logger = Logger.new('log/shopify_api.log')
 
 # initialize Shopify client
